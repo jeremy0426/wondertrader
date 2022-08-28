@@ -55,6 +55,7 @@ WtDataWriterAD::WtDataWriterAD()
 	, _disable_day(false)
 	, _disable_min1(false)
 	, _disable_min5(false)
+	, _disable_min60(false)
 	, _disable_tick(false)
 	, _tick_cache_block(nullptr)
 {
@@ -78,6 +79,7 @@ bool WtDataWriterAD::init(WTSVariant* params, IDataWriterSink* sink)
 	_cache_file_tick = "cache_tick.dmb";
 	_m1_cache._filename = "cache_m1.dmb";
 	_m5_cache._filename = "cache_m5.dmb";
+	_m60_cache._filename = "cache_m60.dmb";
 	_d1_cache._filename = "cache_d1.dmb";
 
 	_log_group_size = params->getUInt32("groupsize");
@@ -85,6 +87,7 @@ bool WtDataWriterAD::init(WTSVariant* params, IDataWriterSink* sink)
 	_disable_tick = params->getBoolean("disabletick");
 	_disable_min1 = params->getBoolean("disablemin1");
 	_disable_min5 = params->getBoolean("disablemin5");
+	_disable_min60 = params->getBoolean("disablemin60");
 	_disable_day = params->getBoolean("disableday");
 
 	loadCache();
@@ -223,6 +226,47 @@ void WtDataWriterAD::loadCache()
 				const BarCacheItem& item = _m5_cache._cache_block->_items[i];
 				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
 				_m5_cache._idx[key] = i;
+			}
+		}
+	}
+
+	if (_m60_cache.empty())
+	{
+		bool bNew = false;
+		std::string filename = _base_dir + _m60_cache._filename;
+		if (!BoostFile::exists(filename.c_str()))
+		{
+			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP_AD;
+			BoostFile bf;
+			bf.create_new_file(filename.c_str());
+			bf.truncate_file((uint32_t)uSize);
+			bf.close_file();
+			bNew = true;
+		}
+
+		_m60_cache._file_ptr.reset(new BoostMappingFile);
+		_m60_cache._file_ptr->map(filename.c_str());
+		_m60_cache._cache_block = (RTBarCache*)_m60_cache._file_ptr->addr();
+
+		_m60_cache._cache_block->_size = min(_m60_cache._cache_block->_size, _m60_cache._cache_block->_capacity);
+
+		if (bNew)
+		{
+			memset(_m60_cache._cache_block, 0, _m60_cache._file_ptr->size());
+
+			_m60_cache._cache_block->_capacity = CACHE_SIZE_STEP_AD;
+			_m60_cache._cache_block->_type = BT_RT_Cache;
+			_m60_cache._cache_block->_size = 0;
+			_m60_cache._cache_block->_version = 1;
+			strcpy(_m60_cache._cache_block->_blk_flag, BLK_FLAG);
+		}
+		else
+		{
+			for (uint32_t i = 0; i < _m60_cache._cache_block->_size; i++)
+			{
+				const BarCacheItem& item = _m60_cache._cache_block->_items[i];
+				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
+				_m60_cache._idx[key] = i;
 			}
 		}
 	}
@@ -535,6 +579,39 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 	}
 }
 
+void WtDataWriterAD::pipeToM60Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
+{
+	//直接落地
+	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_Minute60);
+	if (db)
+	{
+		LMDBBarKey key(ct->getExchg(), ct->getCode(), (uint32_t)bar.time);
+		WtLMDBQuery query(*db);
+		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
+		{
+			pipe_writer_log(_sink, LL_ERROR, "pipe m60 bar @ {} of {} to db failed", bar.time, ct->getFullCode());
+		}
+		else
+		{
+			pipe_writer_log(_sink, LL_DEBUG, "m60 bar @ {} of {} piped to db", bar.time, ct->getFullCode());
+		}
+	}
+
+	for (auto& item : _dumpers)
+	{
+		const char* id = item.first.c_str();
+		IHisDataDumper* dumper = item.second;
+		if (dumper == NULL)
+			continue;
+
+		bool bSucc = dumper->dumpHisBars(ct->getFullCode(), "m60", (WTSBarStruct*)&bar, 1);
+		if (!bSucc)
+		{
+			pipe_writer_log(_sink, LL_ERROR, "pipe m60 bar @ {} of {} via extended dumper {} failed", bar.time, ct->getFullCode(), id);
+		}
+	}
+}
+
 void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 {
 	uint32_t uDate = curTick->actiondate();
@@ -802,6 +879,86 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->add += curTick->additional();
 		}
 	}
+
+	// 更新60分钟线
+	if (!_disable_min60 && _m60_cache._cache_block)
+	{
+		StdUniqueLock lock(_m60_cache._mtx);
+		uint32_t idx = 0;
+		bool bNewCode = false;
+		if (_m60_cache._idx.find(key) == _m60_cache._idx.end())
+		{
+			idx = _m60_cache._cache_block->_size;
+			_m60_cache._idx[key] = _m60_cache._cache_block->_size;
+			_m60_cache._cache_block->_size += 1;
+			if (_m60_cache._cache_block->_size >= _m60_cache._cache_block->_capacity)
+			{
+				_m60_cache._cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_m60_cache._file_ptr, _m5_cache._cache_block->_capacity + CACHE_SIZE_STEP_AD);
+				pipe_writer_log(_sink, LL_INFO, "m60 cache resized to {} items", _m60_cache._cache_block->_capacity);
+			}
+			bNewCode = true;
+		}
+		else
+		{
+			idx = _m60_cache._idx[key];
+		}
+
+		BarCacheItem& item = (BarCacheItem&)_m60_cache._cache_block->_items[idx];
+		if (bNewCode)
+		{
+			strcpy(item._exchg, curTick->exchg());
+			strcpy(item._code, curTick->code());
+		}
+		WTSBarStruct* lastBar = &item._bar;
+
+		//拼接60分钟线
+		uint32_t barMins = (minutes / 60) * 60 + 60;
+		uint64_t barTime = sInfo->minuteToTime(barMins);
+		uint32_t barDate = uDate;
+		if (barTime == 0)
+		{
+			barDate = TimeUtils::getNextDate(barDate);
+		}
+		barTime = TimeUtils::timeToMinBar(barDate, (uint32_t)barTime);
+
+		bool bNewBar = false;
+		if (lastBar == NULL || barTime > lastBar->time)
+		{
+			bNewBar = true;
+		}
+
+		WTSBarStruct* newBar = lastBar;
+		if (bNewBar)
+		{
+			//这里要将lastBar往外写
+			//如果是新的合约，说明还没数据，不往外写
+			if(!bNewCode)
+				pipeToM5Bars(ct, *lastBar);
+
+			newBar->date = curTick->tradingdate();
+			newBar->time = barTime;
+			newBar->open = curTick->price();
+			newBar->high = curTick->price();
+			newBar->low = curTick->price();
+			newBar->close = curTick->price();
+
+			newBar->vol = curTick->volume();
+			newBar->money = curTick->turnover();
+			newBar->hold = curTick->openinterest();
+			newBar->add = curTick->additional();
+		}
+		else
+		{
+			newBar->close = curTick->price();
+			newBar->high = max(curTick->price(), newBar->high);
+			newBar->low = min(curTick->price(), newBar->low);
+
+			newBar->vol += curTick->volume();
+			newBar->money += curTick->turnover();
+			newBar->hold = curTick->openinterest();
+			newBar->add += curTick->additional();
+		}
+	}
 }
 
 WTSTickData* WtDataWriterAD::getCurTick(const char* code, const char* exchg/* = ""*/)
@@ -991,6 +1148,11 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_k_db(const char* exchg, WTSKlinePe
 	{
 		the_map = &_exchg_m5_dbs;
 		subdir = "min5";
+	}
+	else if (period == KP_Minute60)
+	{
+		the_map = &_exchg_m60_dbs;
+		subdir = "min60";
 	}
 	else if (period == KP_DAY)
 	{

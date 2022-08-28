@@ -70,6 +70,7 @@ void WtDataReaderAD::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader
 	_d1_cache._filename = "cache_d1.dmb";
 	_m1_cache._filename = "cache_m1.dmb";
 	_m5_cache._filename = "cache_m5.dmb";
+	_m60_cache._filename = "cache_m60.dmb";
 
 	pipe_reader_log(sink, LL_INFO, "WtDataReaderAD initialized, root data folder is {}", _base_dir);
 }
@@ -309,6 +310,8 @@ WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* co
 		wrapper = &_m1_cache;
 	else if (period == KP_Minute5)
 		wrapper = &_m5_cache;
+	else if (period == KP_Minute60)
+		wrapper = &_m60_cache;
 
 	bool isDay = (period == KP_DAY);
 
@@ -562,6 +565,11 @@ WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_k_db(const char* exchg, WTSKlinePe
 	{
 		the_map = &_exchg_m5_dbs;
 		subdir = "min5";
+	}
+	else if (period == KP_Minute60)
+	{
+		the_map = &_exchg_m60_dbs;
+		subdir = "min60";
 	}
 	else if (period == KP_DAY)
 	{

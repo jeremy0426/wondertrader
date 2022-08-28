@@ -87,6 +87,7 @@ private:
 
 	WtLMDBMap	_exchg_m1_dbs;
 	WtLMDBMap	_exchg_m5_dbs;
+	WtLMDBMap	_exchg_m60_dbs;
 	WtLMDBMap	_exchg_d1_dbs;
 
 	//用exchg.code作为key，如BINANCE.BTCUSDT

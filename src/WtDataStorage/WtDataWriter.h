@@ -148,6 +148,7 @@ private:
 
 	KBlockFilesMap	_rt_min1_blocks;
 	KBlockFilesMap	_rt_min5_blocks;
+	KBlockFilesMap	_rt_min60_blocks;
 
 	TickBlockFilesMap	_rt_ticks_blocks;
 	TransBlockFilesMap	_rt_trans_blocks;
@@ -184,6 +185,7 @@ private:
 	bool			_disable_tick;
 	bool			_disable_min1;
 	bool			_disable_min5;
+	bool			_disable_min60;
 	bool			_disable_day;
 
 	bool			_disable_trans;

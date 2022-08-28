@@ -62,6 +62,7 @@ private:
 
 	RTBarCacheWrapper _m1_cache;
 	RTBarCacheWrapper _m5_cache;
+	RTBarCacheWrapper _m60_cache;
 	RTBarCacheWrapper _d1_cache;
 
 	typedef std::function<void()> TaskInfo;
@@ -79,6 +80,7 @@ private:
 	bool			_disable_tick;
 	bool			_disable_min1;
 	bool			_disable_min5;
+	bool			_disable_min60;
 	bool			_disable_day;
 
 private:
@@ -93,6 +95,7 @@ private:
 
 	WtLMDBMap	_exchg_m1_dbs;
 	WtLMDBMap	_exchg_m5_dbs;
+	WtLMDBMap	_exchg_m60_dbs;
 	WtLMDBMap	_exchg_d1_dbs;
 
 	//用exchg.code作为key，如BINANCE.BTCUSDT
@@ -116,6 +119,8 @@ private:
 	void pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar);
 
 	void pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar);
+
+	void pipeToM60Bars(WTSContractInfo* ct, const WTSBarStruct& bar);
 
 	void pushTask(TaskInfo task);
 };

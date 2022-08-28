@@ -381,6 +381,8 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		kp = KP_Minute1;
 	else if (wt_stricmp(period, "m5") == 0)
 		kp = KP_Minute5;
+	else if (wt_stricmp(period, "m60") == 0)
+		kp = KP_Minute60;
 	else
 		kp = KP_DAY;
 
@@ -441,6 +443,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		{
 		case KP_Minute1: btype = BT_HIS_Minute1; break;
 		case KP_Minute5: btype = BT_HIS_Minute5; break;
+		case KP_Minute60: btype = BT_HIS_Minute60; break;
 		default: btype = BT_HIS_Day; break;
 		}
 
@@ -730,6 +733,10 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	else if (wt_stricmp(period, "m5") == 0)
 	{
 		kp = KP_Minute5;
+	}
+	else if (wt_stricmp(period, "m60") == 0)
+	{
+		kp = KP_Minute60;
 	}
 	else if (wt_stricmp(period, "d") == 0)
 	{

@@ -153,6 +153,10 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 		speriod = 'm';
 		times = 5;
 		break;
+	case KP_Minute60:
+		speriod = 'm';
+		times = 60;
+		break;
 	default:
 		speriod = 'd';
 		times = 1;

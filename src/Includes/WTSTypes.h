@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WonderTrader»ù±¾Êý¾ÝÀàÐÍ¶¨ÒåÎÄ¼þ
+ * \brief WonderTraderï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¶ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
  */
 #pragma once
 #include "WTSMarcos.h"
@@ -14,75 +14,75 @@
 NS_WTP_BEGIN
 
 /*
- *	ºÏÔ¼·ÖÀà
+ *	ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½
  */
-//´ÓCTP¸´ÖÆ¹ýÀ´µÄ
+//ï¿½ï¿½CTPï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½ï¿½ï¿½
 typedef enum tagContractCategory
 {
-	CC_Stock,			//¹ÉÆ±
-	CC_Future,			//ÆÚ»õ
-	CC_FutOption,		//ÆÚ»õÆÚÈ¨£¬ÉÌÆ·ÆÚÈ¨ÊÇÕâ¸ö·ÖÀà
-	CC_Combination,		//×éºÏ
-	CC_Spot,			//¼´ÆÚ
-	CC_EFP,				//ÆÚ×ªÏÖ
-	CC_SpotOption,		//ÏÖ»õÆÚÈ¨£¬¹ÉÖ¸ÆÚÈ¨ÊÇÕâ¸ö·ÖÀà
-	CC_ETFOption,		//¸ö¹ÉÆÚÈ¨£¬ETFÆÚÈ¨ÊÇÕâ¸ö·ÖÀà
+	CC_Stock,			//ï¿½ï¿½Æ±
+	CC_Future,			//ï¿½Ú»ï¿½
+	CC_FutOption,		//ï¿½Ú»ï¿½ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	CC_Combination,		//ï¿½ï¿½ï¿½
+	CC_Spot,			//ï¿½ï¿½ï¿½ï¿½
+	CC_EFP,				//ï¿½ï¿½×ªï¿½ï¿½
+	CC_SpotOption,		//ï¿½Ö»ï¿½ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	CC_ETFOption,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½ETFï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	CC_DC_Spot	= 20,	//Êý±ÒÏÖ»õ
-	CC_DC_Swap,			//Êý±ÒÓÀÐø
-	CC_DC_Future,		//Êý±ÒÆÚ»õ
-	CC_DC_Margin,		//Êý±Ò¸Ü¸Ë
-	CC_DC_Option,		//Êý±ÒÆÚÈ¨
+	CC_DC_Spot	= 20,	//ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½
+	CC_DC_Swap,			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	CC_DC_Future,		//ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½
+	CC_DC_Margin,		//ï¿½ï¿½ï¿½Ò¸Ü¸ï¿½
+	CC_DC_Option,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨
 
-	CC_UserIndex = 90	//×Ô¶¨ÒåÖ¸Êý
+	CC_UserIndex = 90	//ï¿½Ô¶ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
 } ContractCategory;
 
 /*
- *	ÆÚÈ¨ÀàÐÍ
+ *	ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagOptionType
 {
 	OT_None = 0,
-	OT_Call = '1',		//¿´ÕÇÆÚÈ¨
-	OT_Put	= '2'		//¿´µøÆÚÈ¨
+	OT_Call = '1',		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨
+	OT_Put	= '2'		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨
 } OptionType;
 
 /*
- *	Æ½²ÖÀàÐÍ
+ *	Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagCoverMode
 {
-	CM_OpenCover,		//¿ªÆ½
-	CM_CoverToday,		//¿ªÆ½×òÆ½½ñ
-	CM_UNFINISHED,		//Æ½Î´ÁË½áµÄ
-	CM_None			//²»Çø·Ö¿ªÆ½
+	CM_OpenCover,		//ï¿½ï¿½Æ½
+	CM_CoverToday,		//ï¿½ï¿½Æ½ï¿½ï¿½Æ½ï¿½ï¿½
+	CM_UNFINISHED,		//Æ½Î´ï¿½Ë½ï¿½ï¿½
+	CM_None			//ï¿½ï¿½ï¿½ï¿½ï¿½Ö¿ï¿½Æ½
 } CoverMode;
 
 /*
- *	½»Ò×Ä£Ê½
+ *	ï¿½ï¿½ï¿½ï¿½Ä£Ê½
  */
 typedef enum tagTradingMode
 {
-	TM_Both,	//¶à¿Õ¶¼Ö§³Ö
-	TM_Long,	//Ö»ÄÜ×ö¶à
-	TM_LongT1,	//×ö¶àT+1
-	TM_None = 9	//²»ÄÜ½»Ò×
+	TM_Both,	//ï¿½ï¿½Õ¶ï¿½Ö§ï¿½ï¿½
+	TM_Long,	//Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	TM_LongT1,	//ï¿½ï¿½ï¿½ï¿½T+1
+	TM_None = 9	//ï¿½ï¿½ï¿½Ü½ï¿½ï¿½ï¿½
 } TradingMode;
 
 /*
-*	¼Û¸ñÄ£Ê½
+*	ï¿½Û¸ï¿½Ä£Ê½
 */
 typedef enum tagPriceMode
 {
-	PM_Both,		//ÊÐ¼ÛÏÞ¼Û¶¼Ö§³Ö
-	PM_Limit,		//Ö»Ö§³ÖÏÞ¼Û
-	PM_Market,		//Ö»Ö§³ÖÊÐ¼Û
-	PM_None	= 9		//²»Ö§³Ö½»Ò×
+	PM_Both,		//ï¿½Ð¼ï¿½ï¿½Þ¼Û¶ï¿½Ö§ï¿½ï¿½
+	PM_Limit,		//Ö»Ö§ï¿½ï¿½ï¿½Þ¼ï¿½
+	PM_Market,		//Ö»Ö§ï¿½ï¿½ï¿½Ð¼ï¿½
+	PM_None	= 9		//ï¿½ï¿½Ö§ï¿½Ö½ï¿½ï¿½ï¿½
 } PriceMode;
 
 /*
- *	KÏßÊý¾ÝÀàÐÍ
- *	¿ª¡¢¸ß¡¢µÍ¡¢ÊÕ¡¢Á¿¡¢¶î¡¢ÈÕÆÚ
+ *	Kï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ *	ï¿½ï¿½ï¿½ï¿½ï¿½ß¡ï¿½ï¿½Í¡ï¿½ï¿½Õ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î¡¢ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagKlineFieldType
 {
@@ -96,13 +96,14 @@ typedef enum tagKlineFieldType
 } WTSKlineFieldType;
 
 /*
- *	KÏßÖÜÆÚ
+ *	Kï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagKlinePeriod
 {
 	KP_Tick,
 	KP_Minute1,
 	KP_Minute5,
+	KP_Minute60,
 	KP_DAY,
 	KP_Week,
 	KP_Month
@@ -119,7 +120,7 @@ static const char* PERIOD_NAME[] =
 };
 
 /*
- *	ÈÕÖ¾¼¶±ð
+ *	ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagLogLevel
 {
@@ -133,241 +134,241 @@ typedef enum tagLogLevel
 } WTSLogLevel;
 
 /*
- *	¼Û¸ñÀàÐÍ
+ *	ï¿½Û¸ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagPriceType
 {
-	WPT_ANYPRICE	= 0,			//ÊÐ¼Ûµ¥
-	WPT_LIMITPRICE,					//ÏÞ¼Ûµ¥
-	WPT_BESTPRICE,					//×îÓÅ¼Û
-	WPT_LASTPRICE,					//×îÐÂ¼Û
+	WPT_ANYPRICE	= 0,			//ï¿½Ð¼Ûµï¿½
+	WPT_LIMITPRICE,					//ï¿½Þ¼Ûµï¿½
+	WPT_BESTPRICE,					//ï¿½ï¿½ï¿½Å¼ï¿½
+	WPT_LASTPRICE,					//ï¿½ï¿½ï¿½Â¼ï¿½
 
 	//////////////////////////////////////////////////////////////////////////
-	//ÒÔÏÂ¶Ô±êCTPµÄ¼Û¸ñÀàÐÍ
-	WPT_CTP_LASTPLUSONETICKS = 20,	//×îÐÂ¼Û+1ticks
-	WPT_CTP_LASTPLUSTWOTICKS,		//×îÐÂ¼Û+2ticks
-	WPT_CTP_LASTPLUSTHREETICKS,		//×îÐÂ¼Û+3ticks
-	WPT_CTP_ASK1,					//ÂôÒ»¼Û
-	WPT_CTP_ASK1PLUSONETICKS,		//ÂôÒ»¼Û+1ticks
-	WPT_CTP_ASK1PLUSTWOTICKS,		//ÂôÒ»¼Û+2ticks
-	WPT_CTP_ASK1PLUSTHREETICKS,		//ÂôÒ»¼Û+3ticks
-	WPT_CTP_BID1,					//ÂòÒ»¼Û
-	WPT_CTP_BID1PLUSONETICKS,		//ÂôÒ»¼Û+1ticks
-	WPT_CTP_BID1PLUSTWOTICKS,		//ÂôÒ»¼Û+2ticks
-	WPT_CTP_BID1PLUSTHREETICKS,		//ÂôÒ»¼Û+3ticks
-	WPT_CTP_FIVELEVELPRICE,			//Îåµµ¼Û£¬ÖÐ½ðËùÊÐ¼Û
+	//ï¿½ï¿½ï¿½Â¶Ô±ï¿½CTPï¿½Ä¼Û¸ï¿½ï¿½ï¿½ï¿½ï¿½
+	WPT_CTP_LASTPLUSONETICKS = 20,	//ï¿½ï¿½ï¿½Â¼ï¿½+1ticks
+	WPT_CTP_LASTPLUSTWOTICKS,		//ï¿½ï¿½ï¿½Â¼ï¿½+2ticks
+	WPT_CTP_LASTPLUSTHREETICKS,		//ï¿½ï¿½ï¿½Â¼ï¿½+3ticks
+	WPT_CTP_ASK1,					//ï¿½ï¿½Ò»ï¿½ï¿½
+	WPT_CTP_ASK1PLUSONETICKS,		//ï¿½ï¿½Ò»ï¿½ï¿½+1ticks
+	WPT_CTP_ASK1PLUSTWOTICKS,		//ï¿½ï¿½Ò»ï¿½ï¿½+2ticks
+	WPT_CTP_ASK1PLUSTHREETICKS,		//ï¿½ï¿½Ò»ï¿½ï¿½+3ticks
+	WPT_CTP_BID1,					//ï¿½ï¿½Ò»ï¿½ï¿½
+	WPT_CTP_BID1PLUSONETICKS,		//ï¿½ï¿½Ò»ï¿½ï¿½+1ticks
+	WPT_CTP_BID1PLUSTWOTICKS,		//ï¿½ï¿½Ò»ï¿½ï¿½+2ticks
+	WPT_CTP_BID1PLUSTHREETICKS,		//ï¿½ï¿½Ò»ï¿½ï¿½+3ticks
+	WPT_CTP_FIVELEVELPRICE,			//ï¿½åµµï¿½Û£ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½
 
 	//////////////////////////////////////////////////////////////////////////
-	//ÒÔÏÂ¶Ô±êDCµÄ¼Û¸ñÀàÐÍ
-	WPT_DC_POSTONLY	= 100,			//Ö»×ömakerµ¥
-	WPT_DC_FOK,						//È«²¿³É½»»òÁ¢¼´È¡Ïû
-	WPT_DC_IOC,						//Á¢¼´³É½»²¢È¡ÏûÊ£Óà
-	WPT_DC_OPTLIMITIOC				//ÊÐ¼ÛÎ¯ÍÐÁ¢¼´³É½»²¢È¡ÏûÊ£Óà
+	//ï¿½ï¿½ï¿½Â¶Ô±ï¿½DCï¿½Ä¼Û¸ï¿½ï¿½ï¿½ï¿½ï¿½
+	WPT_DC_POSTONLY	= 100,			//Ö»ï¿½ï¿½makerï¿½ï¿½
+	WPT_DC_FOK,						//È«ï¿½ï¿½ï¿½É½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½
+	WPT_DC_IOC,						//ï¿½ï¿½ï¿½ï¿½ï¿½É½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ê£ï¿½ï¿½
+	WPT_DC_OPTLIMITIOC				//ï¿½Ð¼ï¿½Î¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ê£ï¿½ï¿½
 } WTSPriceType;
 
 /*
- *	Ê±¼äÌõ¼þ
+ *	Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagTimeCondition
 {
-	WTC_IOC		= '1',	//Á¢¼´Íê³É,·ñÔò³·Ïú
-	WTC_GFS,			//±¾½ÚÓÐÐ§
-	WTC_GFD,			//µ±ÈÕÓÐÐ§
+	WTC_IOC		= '1',	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	WTC_GFS,			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
+	WTC_GFD,			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
 } WTSTimeCondition;
 
 /*
- *	¶©µ¥±êÖ¾
+ *	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾
  */
 typedef enum tagOrderFlag
 {
-	WOF_NOR = '0',		//ÆÕÍ¨¶©µ¥
+	WOF_NOR = '0',		//ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½
 	WOF_FAK,			//fak
 	WOF_FOK,			//fok
 } WTSOrderFlag;
 
 /*
- *	¿ªÆ½·½Ïò
+ *	ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagOffsetType
 {
-	WOT_OPEN			= '0',	//¿ª²Ö
-	WOT_CLOSE,					//Æ½²Ö,ÉÏÆÚÎªÆ½×ò
+	WOT_OPEN			= '0',	//ï¿½ï¿½ï¿½ï¿½
+	WOT_CLOSE,					//Æ½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ÎªÆ½ï¿½ï¿½
 	WOT_FORCECLOSE,				//Ç¿Æ½
-	WOT_CLOSETODAY,				//Æ½½ñ
-	WOT_CLOSEYESTERDAY,			//Æ½×ò
+	WOT_CLOSETODAY,				//Æ½ï¿½ï¿½
+	WOT_CLOSEYESTERDAY,			//Æ½ï¿½ï¿½
 } WTSOffsetType;
 
 /*
- *	¶à¿Õ·½Ïò
+ *	ï¿½ï¿½Õ·ï¿½ï¿½ï¿½
  */
 typedef enum tagDirectionType
 {
-	WDT_LONG			= '0',	//×ö¶à
-	WDT_SHORT,					//×ö¿Õ
-	WDT_NET						//¾»
+	WDT_LONG			= '0',	//ï¿½ï¿½ï¿½ï¿½
+	WDT_SHORT,					//ï¿½ï¿½ï¿½ï¿½
+	WDT_NET						//ï¿½ï¿½
 } WTSDirectionType;
 
 /*
- *	ÒµÎñÀàÐÍ
+ *	Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagBusinessType
 {
-	BT_CASH		= '0',	//ÆÕÍ¨ÂòÂô,
-	BT_ETF		= '1',	//ETFÉêÊê
-	BT_EXECUTE	= '2',	//ÆÚÈ¨ÐÐÈ¨
-	BT_QUOTE	= '3',	//ÆÚÈ¨±¨¼Û
-	BT_FORQUOTE = '4',	//ÆÚÈ¨Ñ¯¼Û
-	BT_FREEZE	= '5',	//ÆÚÈ¨¶ÔËø
-	BT_CREDIT	= '6',	//ÈÚ×ÊÈÚÈ¯
-	BT_UNKNOWN			//Î´ÖªÒµÎñÀàÐÍ
+	BT_CASH		= '0',	//ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½,
+	BT_ETF		= '1',	//ETFï¿½ï¿½ï¿½ï¿½
+	BT_EXECUTE	= '2',	//ï¿½ï¿½È¨ï¿½ï¿½È¨
+	BT_QUOTE	= '3',	//ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½
+	BT_FORQUOTE = '4',	//ï¿½ï¿½È¨Ñ¯ï¿½ï¿½
+	BT_FREEZE	= '5',	//ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½
+	BT_CREDIT	= '6',	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¯
+	BT_UNKNOWN			//Î´ÖªÒµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 } WTSBusinessType;
 
 /*
- *	¶©µ¥²Ù×÷ÀàÐÍ
+ *	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagActionFlag
 {
-	WAF_CANCEL			= '0',	//³·Ïú
-	WAF_MODIFY			= '3',	//ÐÞ¸Ä
+	WAF_CANCEL			= '0',	//ï¿½ï¿½ï¿½ï¿½
+	WAF_MODIFY			= '3',	//ï¿½Þ¸ï¿½
 } WTSActionFlag;
 
 /*
- *	¶©µ¥×´Ì¬
+ *	ï¿½ï¿½ï¿½ï¿½×´Ì¬
  */
 typedef enum tagOrderState
 {
-	WOS_AllTraded				= '0',	//È«²¿³É½»
-	WOS_PartTraded_Queuing,				//²¿·Ö³É½»,ÈÔÔÚ¶ÓÁÐÖÐ
-	WOS_PartTraded_NotQueuing,			//²¿·Ö³É½»,Î´ÔÚ¶ÓÁÐ
-	WOS_NotTraded_Queuing,				//Î´³É½»
-	WOS_NotTraded_NotQueuing,			//Î´³É½»,Î´ÔÚ¶ÓÁÐ
-	WOS_Canceled,						//ÒÑ³·Ïú
-	WOS_Submitting				= 'a',	//ÕýÔÚÌá½»
-	WOS_Nottouched,						//Î´´¥·¢
+	WOS_AllTraded				= '0',	//È«ï¿½ï¿½ï¿½É½ï¿½
+	WOS_PartTraded_Queuing,				//ï¿½ï¿½ï¿½Ö³É½ï¿½,ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½
+	WOS_PartTraded_NotQueuing,			//ï¿½ï¿½ï¿½Ö³É½ï¿½,Î´ï¿½Ú¶ï¿½ï¿½ï¿½
+	WOS_NotTraded_Queuing,				//Î´ï¿½É½ï¿½
+	WOS_NotTraded_NotQueuing,			//Î´ï¿½É½ï¿½,Î´ï¿½Ú¶ï¿½ï¿½ï¿½
+	WOS_Canceled,						//ï¿½Ñ³ï¿½ï¿½ï¿½
+	WOS_Submitting				= 'a',	//ï¿½ï¿½ï¿½ï¿½ï¿½á½»
+	WOS_Nottouched,						//Î´ï¿½ï¿½ï¿½ï¿½
 } WTSOrderState;
 
 /*
- *	¶©µ¥ÀàÐÍ
+ *	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagOrderType
 {
-	WORT_Normal			= 0,		//Õý³£¶©µ¥
-	WORT_Exception,					//Òì³£¶©µ¥
-	WORT_System,					//ÏµÍ³¶©µ¥
-	WORT_Hedge						//¶Ô³å¶©µ¥
+	WORT_Normal			= 0,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	WORT_Exception,					//ï¿½ì³£ï¿½ï¿½ï¿½ï¿½
+	WORT_System,					//ÏµÍ³ï¿½ï¿½ï¿½ï¿½
+	WORT_Hedge						//ï¿½Ô³å¶©ï¿½ï¿½
 } WTSOrderType;
 
 /*
- *	³É½»ÀàÐÍ
+ *	ï¿½É½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagTradeType
 {
-	WTT_Common				= '0',	//ÆÕÍ¨
-	WTT_OptionExecution		= '1',	//ÆÚÈ¨Ö´ÐÐ
-	WTT_OTC					= '2',	//OTC³É½»
-	WTT_EFPDerived			= '3',	//ÆÚ×ªÏÖÑÜÉú³É½»
-	WTT_CombinationDerived	= '4'	//×éºÏÑÜÉú³É½»
+	WTT_Common				= '0',	//ï¿½ï¿½Í¨
+	WTT_OptionExecution		= '1',	//ï¿½ï¿½È¨Ö´ï¿½ï¿½
+	WTT_OTC					= '2',	//OTCï¿½É½ï¿½
+	WTT_EFPDerived			= '3',	//ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É½ï¿½
+	WTT_CombinationDerived	= '4'	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É½ï¿½
 } WTSTradeType;
 
 
 /*
- *	´íÎó´úÂë
+ *	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagErrorCode
 {
-	WEC_NONE			=	0,		//Ã»ÓÐ´íÎó
-	WEC_ORDERINSERT,				//ÏÂµ¥´íÎó
-	WEC_ORDERCANCEL,				//³·µ¥´íÎó
-	WEC_EXECINSERT,					//ÐÐÈ¨Ö¸Áî´íÎó
-	WEC_EXECCANCEL,					//ÐÐÈ¨³·Ïú´íÎó
-	WEC_UNKNOWN			=	9999	//Î´Öª´íÎó
+	WEC_NONE			=	0,		//Ã»ï¿½Ð´ï¿½ï¿½ï¿½
+	WEC_ORDERINSERT,				//ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½
+	WEC_ORDERCANCEL,				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	WEC_EXECINSERT,					//ï¿½ï¿½È¨Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½
+	WEC_EXECCANCEL,					//ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	WEC_UNKNOWN			=	9999	//Î´Öªï¿½ï¿½ï¿½ï¿½
 } WTSErroCode;
 
 /*
- *	±È½Ï×Ö¶Î
+ *	ï¿½È½ï¿½ï¿½Ö¶ï¿½
  */
 typedef enum tagCompareField
 {
-	WCF_NEWPRICE			=	0,	//×îÐÂ¼Û
-	WCF_BIDPRICE,					//ÂòÒ»¼Û
-	WCF_ASKPRICE,					//ÂôÒ»¼Û
-	WCF_PRICEDIFF,					//¼Û²î,Ö¹Ó¯Ö¹Ëð×¨ÓÃ
-	WCF_NONE				=	9	//²»±È½Ï
+	WCF_NEWPRICE			=	0,	//ï¿½ï¿½ï¿½Â¼ï¿½
+	WCF_BIDPRICE,					//ï¿½ï¿½Ò»ï¿½ï¿½
+	WCF_ASKPRICE,					//ï¿½ï¿½Ò»ï¿½ï¿½
+	WCF_PRICEDIFF,					//ï¿½Û²ï¿½,Ö¹Ó¯Ö¹ï¿½ï¿½×¨ï¿½ï¿½
+	WCF_NONE				=	9	//ï¿½ï¿½ï¿½È½ï¿½
 } WTSCompareField;
 
 /*
- *	±È½ÏÀàÐÍ
+ *	ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef enum tagCompareType
 {
-	WCT_Equal			= 0,		//µÈÓÚ
-	WCT_Larger,						//´óÓÚ
-	WCT_Smaller,					//Ð¡ÓÚ
-	WCT_LargerOrEqual,				//´óÓÚµÈÓÚ
-	WCT_SmallerOrEqual				//Ð¡ÓÚµÈÓÚ
+	WCT_Equal			= 0,		//ï¿½ï¿½ï¿½ï¿½
+	WCT_Larger,						//ï¿½ï¿½ï¿½ï¿½
+	WCT_Smaller,					//Ð¡ï¿½ï¿½
+	WCT_LargerOrEqual,				//ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½
+	WCT_SmallerOrEqual				//Ð¡ï¿½Úµï¿½ï¿½ï¿½
 }WTSCompareType;
 
 /*
- *	ÐÐÇé½âÎöÆ÷ÊÂ¼þ
+ *	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
  */
 typedef enum tagParserEvent
 {
-	WPE_Connect			= 0,		//Á¬½ÓÊÂ¼þ
-	WPE_Close,						//¹Ø±ÕÊÂ¼þ
-	WPE_Login,						//µÇÂ¼
-	WPE_Logout						//×¢Ïú
+	WPE_Connect			= 0,		//ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
+	WPE_Close,						//ï¿½Ø±ï¿½ï¿½Â¼ï¿½
+	WPE_Login,						//ï¿½ï¿½Â¼
+	WPE_Logout						//×¢ï¿½ï¿½
 }WTSParserEvent;
 
 /*
- *	½»Ò×Ä£¿éÊÂ¼þ
+ *	ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Â¼ï¿½
  */
 typedef enum tagTraderEvent
 {
-	WTE_Connect			= 0,		//Á¬½ÓÊÂ¼þ
-	WTE_Close,						//¹Ø±ÕÊÂ¼þ
-	WTE_Login,						//µÇÂ¼
-	WTE_Logout						//×¢Ïú
+	WTE_Connect			= 0,		//ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
+	WTE_Close,						//ï¿½Ø±ï¿½ï¿½Â¼ï¿½
+	WTE_Login,						//ï¿½ï¿½Â¼
+	WTE_Logout						//×¢ï¿½ï¿½
 }WTSTraderEvent;
 
 /*
- *	½»Ò××´Ì¬
+ *	ï¿½ï¿½ï¿½ï¿½×´Ì¬
  */
 typedef enum tagTradeStatus
 {
-	TS_BeforeTrading	= '0',	//¿ªÅÌÇ°
-	TS_NotTrading		= '1',	//·Ç½»Ò×
-	TS_Continous		= '2',	//Á¬Ðø¾º¼Û
-	TS_AuctionOrdering	= '3',	//¼¯ºÏ¾º¼ÛÏÂµ¥
-	TS_AuctionBalance	= '4',	//¼¯ºÏ¾º¼ÛÆ½ºâ
-	TS_AuctionMatch		= '5',	//¼¯ºÏ¾º¼Û´éºÏ
-	TS_Closed			= '6'	//ÊÕÅÌ
+	TS_BeforeTrading	= '0',	//ï¿½ï¿½ï¿½ï¿½Ç°
+	TS_NotTrading		= '1',	//ï¿½Ç½ï¿½ï¿½ï¿½
+	TS_Continous		= '2',	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	TS_AuctionOrdering	= '3',	//ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½Âµï¿½
+	TS_AuctionBalance	= '4',	//ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½Æ½ï¿½ï¿½
+	TS_AuctionMatch		= '5',	//ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½Û´ï¿½ï¿½
+	TS_Closed			= '6'	//ï¿½ï¿½ï¿½ï¿½
 }WTSTradeStatus;
 
 /*
- *	ÂòÂô·½ÏòÀàÐÍ
+ *	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef uint32_t WTSBSDirectType;
-#define BDT_Buy		'B'	//ÂòÈë	
-#define BDT_Sell	'S'	//Âô³ö
+#define BDT_Buy		'B'	//ï¿½ï¿½ï¿½ï¿½	
+#define BDT_Sell	'S'	//ï¿½ï¿½ï¿½ï¿½
 #define BDT_Unknown ' '	//Î´Öª
-#define BDT_Borrow	'G'	//½èÈë
-#define BDT_Lend	'F'	//½è³ö
+#define BDT_Borrow	'G'	//ï¿½ï¿½ï¿½ï¿½
+#define BDT_Lend	'F'	//ï¿½ï¿½ï¿½
 
 /*
- *	³É½»ÀàÐÍ
+ *	ï¿½É½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 typedef uint32_t WTSTransType;
-#define TT_Unknown	'U'	//Î´ÖªÀàÐÍ
-#define TT_Match	'M'	//´éºÏ³É½»
-#define TT_Cancel	'C'	//³·µ¥
+#define TT_Unknown	'U'	//Î´Öªï¿½ï¿½ï¿½ï¿½
+#define TT_Match	'M'	//ï¿½ï¿½Ï³É½ï¿½
+#define TT_Cancel	'C'	//ï¿½ï¿½ï¿½ï¿½
 
 /*
- *	Î¯ÍÐÃ÷Ï¸ÀàÐÍ
+ *	Î¯ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ï¿½
  */
 typedef uint32_t WTSOrdDetailType;
-#define ODT_Unknown		0	//Î´ÖªÀàÐÍ
-#define ODT_BestPrice	'U'	//±¾·½×îÓÅ
-#define ODT_AnyPrice	'1'	//ÊÐ¼Û
-#define ODT_LimitPrice	'2'	//ÏÞ¼Û
+#define ODT_Unknown		0	//Î´Öªï¿½ï¿½ï¿½ï¿½
+#define ODT_BestPrice	'U'	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+#define ODT_AnyPrice	'1'	//ï¿½Ð¼ï¿½
+#define ODT_LimitPrice	'2'	//ï¿½Þ¼ï¿½
 
 NS_WTP_END

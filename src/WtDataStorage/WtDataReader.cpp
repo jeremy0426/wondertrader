@@ -878,6 +878,7 @@ bool WtDataReader::cacheFinalBarsFromLoader(void* codeInfo, const std::string& k
 	{
 	case KP_Minute1: pname = "m1"; break;
 	case KP_Minute5: pname = "m5"; break;
+	case KP_Minute60: pname = "m60"; break;
 	case KP_DAY: pname = "d"; break;
 	default: pname = ""; break;
 	}
@@ -912,6 +913,7 @@ bool WtDataReader::cacheIntegratedBars(void* codeInfo, const std::string& key, c
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 
@@ -1185,6 +1187,7 @@ bool WtDataReader::cacheAdjustedStkBars(void* codeInfo, const std::string& key, 
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 
@@ -1424,6 +1427,7 @@ bool WtDataReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key, 
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 
@@ -1580,6 +1584,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 
@@ -1907,7 +1912,7 @@ WtDataReader::TransBlockPair* WtDataReader::getRTTransBlock(const char* exchg, c
 
 WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg, const char* code, WTSKlinePeriod period)
 {
-	if (period != KP_Minute1 && period != KP_Minute5)
+	if (period != KP_Minute1 && period != KP_Minute5 && period != KP_Minute60)
 		return NULL;
 
 	//std::string key = StrUtil::printf("%s.%s", exchg, code);
@@ -1927,6 +1932,11 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 	case KP_Minute5:
 		cache_map = &_rt_min5_map;
 		subdir = "min5";
+		bType = BT_RT_Minute5;
+		break;
+	case KP_Minute60:
+		cache_map = &_rt_min60_map;
+		subdir = "min60";
 		bType = BT_RT_Minute5;
 		break;
 	default: break;

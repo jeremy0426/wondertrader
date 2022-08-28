@@ -117,6 +117,8 @@ bool WtBtRunner::loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod p
         return _ext_raw_bar_loader(stdCode, "m1");
 	case KP_Minute5:
         return _ext_raw_bar_loader(stdCode, "m5");
+	case KP_Minute60:
+        return _ext_raw_bar_loader(stdCode, "m60");
 	default:
 		{
 			WTSLogger::error("Unsupported period of extended data loader");
@@ -142,6 +144,8 @@ bool WtBtRunner::loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod
 		return _ext_fnl_bar_loader(stdCode, "m1");
 	case KP_Minute5:
 		return _ext_fnl_bar_loader(stdCode, "m5");
+	case KP_Minute60:
+		return _ext_fnl_bar_loader(stdCode, "m60");
 	default:
 		{
 			WTSLogger::error("Unsupported period of extended data loader");

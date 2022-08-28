@@ -54,6 +54,7 @@ private:
 
 	RTBarCacheWrapper _m1_cache;
 	RTBarCacheWrapper _m5_cache;
+	RTBarCacheWrapper _m60_cache;
 	RTBarCacheWrapper _d1_cache;
 
 	typedef struct _BarsList
@@ -116,6 +117,7 @@ private:
 
 	WtLMDBMap	_exchg_m1_dbs;
 	WtLMDBMap	_exchg_m5_dbs;
+	WtLMDBMap	_exchg_m60_dbs;
 	WtLMDBMap	_exchg_d1_dbs;
 
 	//用exchg.code作为key，如BINANCE.BTCUSDT

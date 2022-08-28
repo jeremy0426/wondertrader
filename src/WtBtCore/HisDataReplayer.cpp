@@ -1910,7 +1910,9 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 					if (barTime <= nowTime)
 					{
 						uint32_t times = barsList->_times;
-						if (barsList->_period == KP_Minute5)
+						if (barsList->_period == KP_Minute60)
+							times *= 60;
+						else if (barsList->_period == KP_Minute5)
 							times *= 5;
 						_listener->handle_bar_close(barsList->_code.c_str(), "m", times, &nextBar);
 					}
@@ -2047,7 +2049,13 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	uint32_t baseTimes = 1;
 	if (strcmp(period, "m") == 0)
 	{
-		if(times % 5 == 0)
+		if(times % 60 == 0)
+		{
+			kp = KP_Minute60;
+			baseTimes = 60;
+			realTimes /= 60;
+		}
+		else if(times % 5 == 0)
 		{
 			kp = KP_Minute5;
 			baseTimes = 5;
@@ -3002,7 +3010,11 @@ void HisDataReplayer::checkUnbars()
 		uint32_t realTimes = strtoul(_main_period.c_str() + 2, NULL, 10);
 		if (_main_period[0] == 'm')
 		{
-			if (realTimes % 5 == 0)
+			if (realTimes % 60 == 0)
+			{
+				kp = KP_Minute60;
+			}
+			else if (realTimes % 5 == 0)
 			{
 				kp = KP_Minute5;
 			}
@@ -3338,6 +3350,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	{
 	case KP_Minute1: pname = "m1"; dirname = "min1"; break;
 	case KP_Minute5: pname = "m5"; dirname = "min5"; break;
+	case KP_Minute60: pname = "m60"; dirname = "min60"; break;
 	case KP_DAY: pname = "d"; dirname = "day"; break;
 	default: pname = ""; break;
 	}
@@ -3445,6 +3458,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 			{
 			case KP_Minute1: btype = BT_HIS_Minute1; break;
 			case KP_Minute5: btype = BT_HIS_Minute5; break;
+			case KP_Minute60: btype = BT_HIS_Minute60; break;
 			default: btype = BT_HIS_Day; break;
 			}
 
@@ -3483,6 +3497,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	{
 	case KP_Minute1: p_suffix = "m1"; break;
 	case KP_Minute5: p_suffix = "m5"; break;
+	case KP_Minute60: p_suffix = "m60"; break;
 	case KP_DAY: p_suffix = "d"; break;
 	default: p_suffix = ""; break;
 	}
@@ -3604,6 +3619,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		{
 		case KP_Minute1: btype = BT_HIS_Minute1; break;
 		case KP_Minute5: btype = BT_HIS_Minute5; break;
+		case KP_Minute60: btype = BT_HIS_Minute60; break;
 		default: btype = BT_HIS_Day; break;
 		}
 
@@ -3644,6 +3660,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 

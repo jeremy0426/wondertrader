@@ -135,6 +135,11 @@ WtBtDtReaderAD::WtLMDBPtr WtBtDtReaderAD::get_k_db(const char* exchg, WTSKlinePe
 		the_map = &_exchg_m5_dbs;
 		subdir = "min5";
 	}
+	else if (period == KP_Minute60)
+	{
+		the_map = &_exchg_m60_dbs;
+		subdir = "min60";
+	}
 	else if (period == KP_DAY)
 	{
 		the_map = &_exchg_d1_dbs;

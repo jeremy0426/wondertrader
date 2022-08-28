@@ -608,7 +608,12 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 	WTSKlinePeriod kp;
 	if (period[0] == 'm')
 	{
-		if (times % 5 == 0)
+		if (times % 60 == 0)
+		{
+			kp = KP_Minute60;
+			times /= 60;
+		}
+		else if (times % 5 == 0)
 		{
 			kp = KP_Minute5;
 			times /= 5;

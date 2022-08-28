@@ -25,7 +25,9 @@ typedef enum tagBlockType
 	BT_HIS_Ticks		= 24,	//历史tick
 	BT_HIS_Trnsctn		= 25,	//历史逐笔成交
 	BT_HIS_OrdDetail	= 26,	//历史逐笔委托
-	BT_HIS_OrdQueue		= 27	//历史委托队列
+	BT_HIS_OrdQueue		= 27,	//历史委托队列
+	BT_HIS_Minute60		= 28, 	//历史60分钟线
+	BT_RT_Minute60		= 29	//实时60分钟线
 } BlockType;
 
 #define BLOCK_VERSION_RAW		0x01	//老结构体未压缩

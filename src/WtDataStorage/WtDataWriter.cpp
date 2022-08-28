@@ -65,6 +65,7 @@ WtDataWriter::WtDataWriter()
 	, _disable_day(false)
 	, _disable_min1(false)
 	, _disable_min5(false)
+	, _disable_min60(false)
 	, _disable_orddtl(false)
 	, _disable_ordque(false)
 	, _disable_trans(false)
@@ -111,6 +112,7 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 	_disable_tick = params->getBoolean("disabletick");
 	_disable_min1 = params->getBoolean("disablemin1");
 	_disable_min5 = params->getBoolean("disablemin5");
+	_disable_min60 = params->getBoolean("disablemin60");
 	_disable_day = params->getBoolean("disableday");
 
 	_disable_trans = params->getBoolean("disabletrans");
@@ -134,9 +136,9 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 	_proc_chk.reset(new StdThread(boost::bind(&WtDataWriter::check_loop, this)));
 
 	pipe_writer_log(sink, LL_INFO, "WtDataWriter initialized, root dir: {}, save_csv_tick: {}, async_mode: {}, log_group_size: {}, disable_history: {}, "
-		"disable_tick: {}, disable_min1: {}, disable_min5: {}, disable_day: {}, disable_trans: {}, disable_ordque: {}, disable_orders: {}", 
+		"disable_tick: {}, disable_min1: {}, disable_min5: {}, disable_min60: {}, disable_day: {}, disable_trans: {}, disable_ordque: {}, disable_orders: {}", 
 		_base_dir, _save_tick_log, _async_proc, _log_group_size, _disable_his, _disable_tick, 
-		_disable_min1, _disable_min5, _disable_day, _disable_trans, _disable_ordque, _disable_orddtl);
+		_disable_min1, _disable_min5, _disable_min60, _disable_day, _disable_trans, _disable_ordque, _disable_orddtl);
 	return true;
 }
 
@@ -175,6 +177,11 @@ void WtDataWriter::release()
 	}
 
 	for (auto& v : _rt_min5_blocks)
+	{
+		delete v.second;
+	}
+
+	for (auto& v : _rt_min60_blocks)
 	{
 		delete v.second;
 	}
@@ -1171,6 +1178,74 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			}
 		}
 	}
+	if (!_disable_min60)
+	{
+		KBlockPair* pBlockPair = getKlineBlock(ct, KP_Minute60);
+		if (pBlockPair && pBlockPair->_block)
+		{
+			SpinLock lock(pBlockPair->_mutex);
+			RTKlineBlock* blk = pBlockPair->_block;
+			if (blk->_size == blk->_capacity)
+			{
+				pBlockPair->_file->sync();
+				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity + KLINE_SIZE_STEP);
+				blk = pBlockPair->_block;
+			}
+
+			WTSBarStruct* lastBar = NULL;
+			if (blk->_size > 0)
+			{
+				lastBar = &blk->_bars[blk->_size - 1];
+			}
+
+			uint32_t barMins = (minutes / 60) * 60 + 60;
+			uint64_t barTime = sInfo->minuteToTime(barMins);
+			uint32_t barDate = uDate;
+			if (barTime == 0)
+			{
+				barDate = TimeUtils::getNextDate(barDate);
+			}
+			barTime = TimeUtils::timeToMinBar(barDate, (uint32_t)barTime);
+
+			bool bNew = false;
+			if (lastBar == NULL || barTime > lastBar->time)
+			{
+				bNew = true;
+			}
+
+			WTSBarStruct* newBar = NULL;
+			if (bNew)
+			{
+				newBar = &blk->_bars[blk->_size];
+				blk->_size += 1;
+
+				newBar->date = curTick->tradingdate();
+				newBar->time = barTime;
+				newBar->open = curTick->price();
+				newBar->high = curTick->price();
+				newBar->low = curTick->price();
+				newBar->close = curTick->price();
+
+				newBar->vol = curTick->volume();
+				newBar->money = curTick->turnover();
+				newBar->hold = curTick->openinterest();
+				newBar->add = curTick->additional();
+			}
+			else
+			{
+				newBar = &blk->_bars[blk->_size - 1];
+
+				newBar->close = curTick->price();
+				newBar->high = max(curTick->price(), newBar->high);
+				newBar->low = min(curTick->price(), newBar->low);
+
+				newBar->vol += curTick->volume();
+				newBar->money += curTick->turnover();
+				newBar->hold = curTick->openinterest();
+				newBar->add += curTick->additional();
+			}
+		}
+	}
 }
 
 template<typename T>
@@ -1207,6 +1282,11 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		cache_map = &_rt_min5_blocks;
 		subdir = "min5";
 		bType = BT_RT_Minute5;
+		break;
+	case KP_Minute60: 
+		cache_map = &_rt_min60_blocks;
+		subdir = "min60";
+		bType = BT_RT_Minute60;
 		break;
 	default: break;
 	}
@@ -1542,6 +1622,17 @@ void WtDataWriter::check_loop()
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
+
+		for (auto it = _rt_min60_blocks.begin(); it != _rt_min60_blocks.end(); it++)
+		{
+			const char* key = it->first.c_str();
+			KBlockPair* kBlk = (KBlockPair*)it->second;
+			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
+			{
+				pipe_writer_log(_sink, LL_INFO, "min60 cache of {} mapping expired, automatically closed", key);
+				releaseBlock<KBlockPair>(kBlk);
+			}
+		}
 	}
 }
 
@@ -1640,6 +1731,35 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 			if (!bSucc)
 			{
 				pipe_writer_log(_sink, LL_ERROR, "Closing Task of m5 bar of {} failed via extended dumper {}", ct->getFullCode(), id);
+			}
+		}
+
+		count++;
+		kBlkPair->_block->_size = 0;
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
+
+	//第五步,转移实时60分钟线
+	kBlkPair = getKlineBlock(ct, KP_Minute60, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		pipe_writer_log(_sink, LL_INFO, "Transfering min60 bars of {}...", ct->getFullCode());
+		SpinLock lock(kBlkPair->_mutex);
+
+		for (auto& item : _dumpers)
+		{
+			const char* id = item.first.c_str();
+			IHisDataDumper* dumper = item.second;
+			if (dumper == NULL)
+				continue;
+
+			bool bSucc = dumper->dumpHisBars(key.c_str(), "m60", kBlkPair->_block->_bars, size);
+			if (!bSucc)
+			{
+				pipe_writer_log(_sink, LL_ERROR, "Closing Task of m60 bar of {} failed via extended dumper {}", ct->getFullCode(), id);
 			}
 		}
 
@@ -2011,6 +2131,35 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 		if (kBlkPair)
 			releaseBlock(kBlkPair);
 	}
+
+	//第五步,转移实时60分钟线
+	kBlkPair = getKlineBlock(ct, KP_Minute60, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		pipe_writer_log(_sink, LL_INFO, "Transfering min60 bars of {}...", ct->getFullCode());
+		SpinLock lock(kBlkPair->_mutex);
+
+		for (auto& item : _dumpers)
+		{
+			const char* id = item.first.c_str();
+			IHisDataDumper* dumper = item.second;
+			if (dumper == NULL)
+				continue;
+
+			bool bSucc = dumper->dumpHisBars(key.c_str(), "m60", kBlkPair->_block->_bars, size);
+			if (!bSucc)
+			{
+				pipe_writer_log(_sink, LL_ERROR, "Closing Task of m60 bar of {} failed via extended dumper {}", ct->getFullCode(), id);
+			}
+		}
+
+		count++;
+		kBlkPair->_block->_size = 0;
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
 
 	return count;
 }

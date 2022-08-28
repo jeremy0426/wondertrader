@@ -1183,6 +1183,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key,
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 
@@ -1857,6 +1858,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 
@@ -2192,7 +2194,7 @@ WtRdmDtReader::TransBlockPair* WtRdmDtReader::getRTTransBlock(const char* exchg,
 
 WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exchg, const char* code, WTSKlinePeriod period)
 {
-	if (period != KP_Minute1 && period != KP_Minute5)
+	if (period != KP_Minute1 && period != KP_Minute5 && period != KP_Minute60)
 		return NULL;
 
 	std::string key = fmt::format("{}.{}", exchg, code);
@@ -2211,6 +2213,11 @@ WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exch
 		cache_map = &_rt_min5_map;
 		subdir = "min5";
 		bType = BT_RT_Minute5;
+		break;
+	case KP_Minute60:
+		cache_map = &_rt_min60_map;
+		subdir = "min60";
+		bType = BT_RT_Minute60;
 		break;
 	default: break;
 	}
@@ -2289,6 +2296,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	{
 	case KP_Minute1: pname = "min1"; break;
 	case KP_Minute5: pname = "min5"; break;
+	case KP_Minute60: pname = "min60"; break;
 	default: pname = "day"; break;
 	}
 

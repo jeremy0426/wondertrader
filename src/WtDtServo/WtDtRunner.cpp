@@ -149,7 +149,12 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 	uint32_t realTimes = times;
 	if (basePeriod[0] == 'm')
 	{
-		if (times % 5 == 0)
+		if (times % 60 == 0)
+		{
+			kp = KP_Minute60;
+			realTimes /= 60;
+		}
+		else if (times % 5 == 0)
 		{
 			kp = KP_Minute5;
 			realTimes /= 5;
@@ -190,7 +195,12 @@ WTSKlineSlice* WtDtRunner::get_bars_by_date(const char* stdCode, const char* per
 	uint32_t realTimes = times;
 	if (basePeriod[0] == 'm')
 	{
-		if (times % 5 == 0)
+		if (times % 60 == 0)
+		{
+			kp = KP_Minute60;
+			realTimes /= 60;
+		}
+		else if (times % 5 == 0)
 		{
 			kp = KP_Minute5;
 			realTimes /= 5;
@@ -260,7 +270,12 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 	uint32_t realTimes = times;
 	if (basePeriod[0] == 'm')
 	{
-		if (times % 5 == 0)
+		if (times % 60 == 0)
+		{
+			kp = KP_Minute60;
+			realTimes /= 60;
+		}
+		else if (times % 5 == 0)
 		{
 			kp = KP_Minute5;
 			realTimes /= 5;

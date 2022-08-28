@@ -104,6 +104,7 @@ private:
 
 	RTKBlockFilesMap	_rt_min1_map;
 	RTKBlockFilesMap	_rt_min5_map;
+	RTKBlockFilesMap	_rt_min60_map;
 
 	TBlockFilesMap		_rt_tick_map;
 	TransBlockFilesMap	_rt_trans_map;
